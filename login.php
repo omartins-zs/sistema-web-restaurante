@@ -11,13 +11,11 @@ if (count($_POST) > 0) {
     $password = "";
 
     try {
-        $conn = new PDO("mysql:host=$servername;dbname=restaurante-bd", $username, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        //   echo "Conexão realizada com sucesso";
+        include("conexao_bd.php");
 
         // 3. Verifica se email e senha estao no bando de dados
         $stmt = $conn->prepare("SELECT codigo FROM usuario WHERE email=:email AND senha=md5(:senha)");
-        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR); // STMT = Consulta
         $stmt->bindParam(':senha', $senha, PDO::PARAM_STR);
         $stmt->execute();
 
