@@ -13,7 +13,7 @@
 
 <body>
     <div class="container">
-        <form action="cadastrar_pedido php" method="POST">
+        <form action="cadastrar_pedido.php" method="POST">
             <h2>Escolha de item</h2><br>
             <div class="form-group">
                 <label for="nome_produto">Nome do produto:</label>
@@ -32,7 +32,11 @@
                 <input type="text" class="form-control" name="preco_produto" id="preco_produto">
             </div>
             <button type="submit" class="btn btn-primary">Adicionar item</button>
-
+            <?php if (isset($resultado)) : ?>
+                <div class="alert <?= $resultado["style"] ?>">
+                    <?php echo $resultado["msg"]; ?>
+                </div>
+            <?php endif; ?>
         </form>
     </div>
 </body>
