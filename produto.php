@@ -21,7 +21,7 @@
             </div>
             <div class="form-group">
                 <label for="categoria_produto">Categoria:</label>
-                <input type="number" required class="form-control" id="categoria_produto" name="categoria_produto" placeholder="Digite a quantidade" maxlength="10">
+                <input type="text" required class="form-control" id="categoria_produto" name="categoria_produto" placeholder="Digite a quantidade" maxlength="10">
             </div>
             <div class="form-group">
                 <label for="valor_produto">Valor unitário(R$):</label>
