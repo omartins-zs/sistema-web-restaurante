@@ -17,15 +17,30 @@ if (count($_POST) > 0) {
         $stmt = $conn->prepare($sql); // STMT = Consulta
         $stmt->execute([$nome, $categoria, $valor, $foto, $info, null]);
 
+
+        //Pegar os produtos armazenadosno BD
+
+        // 3. Faz um SELECT e traz os dados do BD
+        $consulta = $conn->prepare("SELECT * FROM produto");
+        $consulta->execute();
+
+        $result['produtos'] = $consulta->fetchAll();
+
+        // Para mostrar na Tela se esta vindo os dados
+        // echo "<pre>";
+        // print_r($result['produtos']);
+        // echo "</pre>";
+
         // TODO substituido pelo redirecionamento
         $resultado["msg"] = "Item inserido com sucesso!";
         $resultado["cod"] = 1;
         $resultado["style"] = "alert-success";
     } catch (PDOException $e) {
-        $resultado["msg"] = "Inserção no banco falhou: " . $e->getMessage();
+        $resultado["msg"] = "Erro no banco de dados: " . $e->getMessage();
         $resultado["cod"] = 0;
         $resultado["style"] = "alert-danger";
     }
     $conn = null;
 }
+
 include("produto.php");
