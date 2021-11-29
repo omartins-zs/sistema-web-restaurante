@@ -52,14 +52,17 @@
                 <th>Info Adicional</th>
                 <th>Data hora</th>
             </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+            <?php foreach ($result['produtos'] as $p) : ?>
+                <tr>
+                    <td><?= $p["codigo"]; ?></td>
+                    <td><?= $p["foto"]; ?></td>
+                    <td><?= $p["nome"]; ?></td>
+                    <td><?= $p["categoria"]; ?></td>
+                    <td><?= $p["valor"]; ?></td>
+                    <td><?= $p["info_adicional"]; ?></td>
+                    <td><?= $p["data_hora"]; ?></td>
+                </tr>
+            <?php endforeach; ?>
         </table>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
