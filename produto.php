@@ -61,6 +61,7 @@
                 <th>Valor</th>
                 <th>Info Adicional</th>
                 <th>Data hora</th>
+                <th></th>
             </tr>
             <?php foreach ($produtos as $p) : ?>
             <tr>
@@ -71,6 +72,10 @@
                 <td><?= $p["valor"]; ?></td>
                 <td><?= $p["info_adicional"]; ?></td>
                 <td><?= $p["data_hora"]; ?></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-warning">Alterar</button>
+                    <button class="btn btn-sm btn-outline-danger">Remover</button>
+                </td>
             </tr>
             <?php endforeach; ?>
         </table>
