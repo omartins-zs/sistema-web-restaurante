@@ -17,15 +17,6 @@ if (count($_POST) > 0) {
         $stmt = $conn->prepare($sql); // STMT = Consulta
         $stmt->execute([$nome, $categoria, $valor, $foto, $info, null]);
 
-
-        //Pegar os produtos armazenadosno BD
-
-        // 3. Faz um SELECT e traz os dados do BD
-        $consulta = $conn->prepare("SELECT * FROM produto");
-        $consulta->execute();
-
-        $result['produtos'] = $consulta->fetchAll();
-
         // Para mostrar na Tela se esta vindo os dados
         // echo "<pre>";
         // print_r($result['produtos']);
@@ -36,11 +27,25 @@ if (count($_POST) > 0) {
         $resultado["cod"] = 1;
         $resultado["style"] = "alert-success";
     } catch (PDOException $e) {
-        $resultado["msg"] = "Erro no banco de dados: " . $e->getMessage();
+        $resultado["msg"] = "Erro ao inserir produto no banco de dados: " . $e->getMessage();
         $resultado["cod"] = 0;
         $resultado["style"] = "alert-danger";
     }
-    $conn = null;
 }
 
+try {
+    include("conexao_bd.php");
+
+    // 3. Faz um SELECT para pegar os produtos armazenadosno BD e traz os dados do BD
+    $consulta = $conn->prepare("SELECT * FROM produto");
+    $consulta->execute();
+
+    $result['produtos'] = $consulta->fetchAll();
+} catch (PDOException $e) {
+    $resultado["msg"] = "Erro ao selecionar produto no banco de dados: " . $e->getMessage();
+    $resultado["cod"] = 0;
+    $resultado["style"] = "alert-danger";
+}
+
+$conn = null;
 include("produto.php");
