@@ -74,7 +74,8 @@
                 <td><?= $p["data_hora"]; ?></td>
                 <td>
                     <button class="btn btn-sm btn-outline-warning">Alterar</button>
-                    <button class="btn btn-sm btn-outline-danger">Remover</button>
+                    <a class="btn btn-sm btn-outline-danger" onclick="return confirm('Remover <?= $p['nome'];  ?>?');"
+                        href="./remover_produto.php?cod_prod=<?= $p['codigo']  ?>">Remover</a>
                 </td>
             </tr>
             <?php endforeach; ?>
