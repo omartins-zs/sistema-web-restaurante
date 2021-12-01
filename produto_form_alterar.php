@@ -15,15 +15,17 @@
 <body>
     <div class="container">
         <?php
-        if (isset($_GET['cod_prod']) && $_GET['cod_prod'] > 0) :
-            $cod_prod = $_GET['cod_prod'];
-
-            include("selecionar_produto.php");
-
+        $cod_prod = $_GET["cod_prod"];
+        include("selecionar_produto.php");
         ?>
 
         <form action="alterar_produto.php" method="POST">
             <h2>Alterar Produto</h2><br>
+            <div class="form-group">
+                <label for="nome_produto">Codigo do produto:</label>
+                <input type="text" readonly required value="<?= $produtos[0]['codigo']; ?>" class="form-control"
+                    id="cod_prod" aria-describedby="nomeHelp" name="cod_prod" placeholder="Digite o produto">
+            </div>
             <div class="form-group">
                 <label for="nome_produto">Nome do produto:</label>
                 <input type="text" required value="<?= $produtos[0]['nome']; ?>" class="form-control" id="nome_produto"
@@ -51,7 +53,6 @@
             <button type="submit" class="btn btn-primary">Alterar produto</button>
 
         </form>
-        <?php endif; ?>
         <?php if (isset($resultado)) : ?>
         <div class="alert <?= $resultado["style"] ?>">
             <?php echo $resultado["msg"]; ?>
