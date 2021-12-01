@@ -26,17 +26,18 @@
             <h2>Alterar Produto</h2><br>
             <div class="form-group">
                 <label for="nome_produto">Nome do produto:</label>
-                <input type="text" required class="form-control" id="nome_produto" aria-describedby="nomeHelp"
-                    name="nome_produto" placeholder="Digite o produto">
+                <input type="text" required value="<?= $produtos[0]['nome']; ?>" class="form-control" id="nome_produto"
+                    aria-describedby="nomeHelp" name="nome_produto" placeholder="Digite o produto">
             </div>
             <div class="form-group">
                 <label for="categoria_produto">Categoria:</label>
-                <input type="text" required class="form-control" id="categoria_produto" name="categoria_produto"
-                    placeholder="Digite a quantidade" maxlength="10">
+                <input type="text" required value="<?= $produtos[0]['categoria']; ?>" class="form-control"
+                    id="categoria_produto" name="categoria_produto" placeholder="Digite a quantidade" maxlength="10">
             </div>
             <div class="form-group">
                 <label for="valor_produto">Valor unitário(R$):</label>
-                <input type="number" required step=".01" class="form-control" name="valor_produto" id="valor_produto">
+                <input type="number" required value="<?= $produtos[0]['valor']; ?>" step=".01" class="form-control"
+                    name="valor_produto" id="valor_produto">
             </div>
             <div class="form-group">
                 <label for="preco_produto">Foto:</label>
@@ -44,7 +45,8 @@
             </div>
             <div class="form-group">
                 <label for="info_produto">Informaçoes adicionais:</label>
-                <textarea rows="4" cols="50" name="info_produto" class="form-control" id="info_produto"></textarea>
+                <textarea rows="4" cols="50" name="info_produto" class="form-control"
+                    id="info_produto"><?= $produtos[0]["info_adicional"] ?></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Alterar produto</button>
 
