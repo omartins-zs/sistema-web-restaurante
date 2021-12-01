@@ -6,7 +6,7 @@ try {
     include("conexao_bd.php");
 
     // 3. Faz um SELECT para pegar os produtos armazenadosno BD e traz os dados do BD
-    $consulta = $conn->prepare("SELECT * FROM produto");
+    $consulta = $conn->prepare("SELECT * FROM produto WHERE situacao = 'HABILITADO'");
     $consulta->execute();
 
     $produtos = $consulta->fetchAll();
