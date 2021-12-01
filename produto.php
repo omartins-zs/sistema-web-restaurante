@@ -15,7 +15,7 @@
 <body>
     <div class="container">
         <form action="cadastrar_produto.php" method="POST">
-            <h2>Escolha de itens do pedido</h2><br>
+            <h2>Produtos</h2><br>
             <div class="form-group">
                 <label for="nome_produto">Nome do produto:</label>
                 <input type="text" required class="form-control" id="nome_produto" aria-describedby="nomeHelp"
@@ -73,7 +73,8 @@
                 <td><?= $p["info_adicional"]; ?></td>
                 <td><?= $p["data_hora"]; ?></td>
                 <td>
-                    <button class="btn btn-sm btn-outline-warning">Alterar</button>
+                    <a class="btn btn-sm btn-outline-warning"
+                        href="./produto_form_alterar.php?cod_prod=<?= $p['codigo']  ?>">Alterar</a>
                     <a class="btn btn-sm btn-outline-danger" onclick="return confirm('Remover <?= $p['nome'];  ?>?');"
                         href="./remover_produto.php?cod_prod=<?= $p['codigo']  ?>">Remover</a>
                 </td>
