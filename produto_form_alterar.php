@@ -1,3 +1,5 @@
+<?php session_start(); ?>
+<?php if (isset($_SESSION["nome_usuario"])) :  ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,9 +17,9 @@
 <body>
     <div class="container">
         <?php
-        $cod_prod = $_GET["cod_prod"];
-        include("selecionar_produto.php");
-        ?>
+            $cod_prod = $_GET["cod_prod"];
+            include("selecionar_produto.php");
+            ?>
 
         <form action="alterar_produto.php" method="POST">
             <h2>Alterar Produto</h2><br>
@@ -74,3 +76,8 @@
 </body>
 
 </html>
+<?php else : ?>
+<div class="alert alert-danger">
+    Voce não está logado no sistema
+</div>
+<?php endif; ?>

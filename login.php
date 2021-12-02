@@ -26,6 +26,7 @@ if (count($_POST) > 0) {
             session_start();
             $_SESSION["email_usuario"] = $email;
             $_SESSION["nome_usuario"] = $result[0]["nome"];
+            $_SESSION["codigo_usuario"] = $result[0]["codigo"];
 
             header("Location: pedido.php");
         } else if ($qtd_usuarios == 0) {
