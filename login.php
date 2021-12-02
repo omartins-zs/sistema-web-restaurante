@@ -23,8 +23,10 @@ if (count($_POST) > 0) {
         $result = $stmt->fetchAll();
         $qtd_usuarios = count($result);
         if ($qtd_usuarios == 1) {
+            session_start();
             $_SESSION["email_usuario"] = $email;
-            $_SESSION["nome_usuario"] = $result[0]["senha"];
+            $_SESSION["nome_usuario"] = $result[0]["nome"];
+
             header("Location: pedido.php");
         } else if ($qtd_usuarios == 0) {
             $resultado["msg"] = "Email e Senha nao conferem...";
