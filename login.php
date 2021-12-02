@@ -14,7 +14,7 @@ if (count($_POST) > 0) {
         include("conexao_bd.php");
 
         // 3. Verifica se email e senha estao no bando de dados
-        $stmt = $conn->prepare("SELECT codigo FROM usuario WHERE email=:email AND senha=md5(:senha)");
+        $stmt = $conn->prepare("SELECT * FROM usuario WHERE situacao='Habilitado' AND email=:email AND senha=md5(:senha)");
         $stmt->bindParam(':email', $email, PDO::PARAM_STR); // STMT = Consulta
         $stmt->bindParam(':senha', $senha, PDO::PARAM_STR);
         $stmt->execute();
@@ -23,9 +23,9 @@ if (count($_POST) > 0) {
         $result = $stmt->fetchAll();
         $qtd_usuarios = count($result);
         if ($qtd_usuarios == 1) {
-            // TODO substituido pelo redirecionamento
-            $resultado["msg"] = "Usuario Encontrado!";
-            $resultado["cod"] = 1;
+            $_SESSION["email_usuario"] = $email;
+            $_SESSION["nome_usuario"] = $result[0]["senha"];
+            header("Location: pedido.php");
         } else if ($qtd_usuarios == 0) {
             $resultado["msg"] = "Email e Senha nao conferem...";
             $resultado["cod"] = 0;
