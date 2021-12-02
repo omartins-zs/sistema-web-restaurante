@@ -1,3 +1,5 @@
+<?php session_start(); ?>
+<?php if (isset($_SESSION["nome_usuario"])) :  ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -95,3 +97,8 @@
 </body>
 
 </html>
+<?php else : ?>
+<div class="alert alert-danger">
+    Voce não está logado no sistema
+</div>
+<?php endif; ?>
