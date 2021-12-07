@@ -7,6 +7,7 @@ if (count($_POST) > 0) {
     $valor = $_POST["valor_produto"];
     $foto = $_POST["foto_produto"];
     $info = $_POST["info_produto"];
+    $cod_usuario = $_SESSION["codigo_usuario"];
 
     try {
         // 2. Conexao com banco de dados 
@@ -15,7 +16,7 @@ if (count($_POST) > 0) {
         // 3. Inseri os dados no BD
         $sql = "INSERT INTO produto ( nome, categoria, valor, foto,info_adicional, codigo_usuario) VALUES (?,?,?,?,?,?)";
         $stmt = $conn->prepare($sql); // STMT = Consulta
-        $stmt->execute([$nome, $categoria, $valor, $foto, $info, null]);
+        $stmt->execute([$nome, $categoria, $valor, $foto, $info, $cod_usuario]);
 
         // Para mostrar na Tela se esta vindo os dados
         // echo "<pre>";

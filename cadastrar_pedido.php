@@ -1,11 +1,14 @@
 <?php
 
+session_start();
+
 if (count($_POST) > 0) {
     // 1. Pegar os valores do formulario
     $nome = $_POST["nome_produto"];
     $qtd = $_POST["qtd_produto"];
     $obs = $_POST["obs_produto"];
     $preco = $_POST["preco_produto"];
+    $cod_usuario = $_SESSION["codigo_usuario"];
 
     // Pegar o codigo do usuario logado (chave estrangeira)
 
@@ -16,7 +19,7 @@ if (count($_POST) > 0) {
         // 3. Inseri os dados no BD
         $sql = "INSERT INTO item_pedido (cod_usuario, nome_produto, observacao, preco_und, quantidade) VALUES (?,?,?,?,?)";
         $stmt = $conn->prepare($sql); // STMT = Consulta
-        $stmt->execute([null, $nome, $obs, $preco, $qtd]);
+        $stmt->execute([$cod_usuario, $nome, $obs, $preco, $qtd]);
 
         // TODO substituido pelo redirecionamento
         $resultado["msg"] = "Item inserido com sucesso!";
