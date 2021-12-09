@@ -14,13 +14,37 @@ class Produto
     {
         session_start();
 
-        $this->codigo = $$valores["cod_prod"];
-        $this->nome = $$valores["nome_produto"];
-        $this->categoria = $$valores["categoria_produto"];
-        $this->valor = $$valores["valor_produto"];
-        $this->foto = $$valores["foto_produto"];
-        $this->info = $$valores["info_produto"];
+        $this->codigo = $valores["cod_prod"];
+        $this->nome = $valores["nome_produto"];
+        $this->categoria = $valores["categoria_produto"];
+        $this->valor = $valores["valor_produto"];
+        $this->foto = $valores["foto_produto"];
+        $this->info = $valores["info_produto"];
         $this->cod_usuario = $_SESSION["codigo_usuario"];
+    }
+
+    function selecionar($codigo = null)
+    {
+        $where_cod = "";
+        if (isset($codigo) && $codigo > 0) {
+            $where_cod = " AND codigo = " . $codigo;
+        }
+        try {
+            include("conexao_bd.php");
+
+            // 3. Faz um SELECT para pegar os produtos armazenadosno BD e traz os dados do BD
+            $consulta = $conn->prepare("SELECT * FROM produto WHERE situacao = 'HABILITADO'" . $where_cod);
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll();
+        } catch (PDOException $e) {
+            $resultado["msg"] = "Erro ao selecionar produto no banco de dados: " . $e->getMessage();
+            $resultado["cod"] = 0;
+            $resultado["style"] = "alert-danger";
+        }
+        $conn = null;
+
+        return $resultado;
     }
 
     function inserir($produto)
@@ -73,5 +97,31 @@ class Produto
         $conn = null;
 
         return $resultado;
+    }
+    function remover($codigo)
+    {
+        try {
+            // 2. Conexao com banco de dados 
+            include("conexao_bd.php");
+
+            // 3. Remove os dados no BD(Coloca como "DESABILITADO")
+            $sql = "UPDATE produto SET situacao = 'Desabilitado' WHERE codigo = ?";
+            $stmt = $conn->prepare($sql); // STMT = Consulta
+            $stmt->execute([$codigo]);
+
+            // Para mostrar na Tela se esta vindo os dados
+            // echo "<pre>";
+            // print_r($result['produtos']);
+            // echo "</pre>";
+
+            // TODO substituido pelo redirecionamento
+            $resultado["msg"] = "Item removido com sucesso!";
+            $resultado["cod"] = 1;
+            $resultado["style"] = "alert-success";
+        } catch (PDOException $e) {
+            $resultado["msg"] = "Erro ao inserir produto no banco de dados: " . $e->getMessage();
+            $resultado["cod"] = 0;
+            $resultado["style"] = "alert-danger";
+        }
     }
 }

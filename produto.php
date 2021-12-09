@@ -1,5 +1,8 @@
 <?php session_start(); ?>
 <?php if (isset($_SESSION["nome_usuario"])) :  ?>
+<?php require_once('produto/Produto.php');
+    $produtoObj = new Produto();
+    ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,7 +19,7 @@
 
 <body>
     <div class="container">
-        <form action="cadastrar_produto.php" method="POST">
+        <form action="produto_cadastrar.php" method="POST">
             <h2>Produtos</h2><br>
             <div class="form-group">
                 <label for="nome_produto">Nome do produto:</label>
@@ -49,7 +52,7 @@
         </form>
         <br><br>
 
-        <?php include("selecionar_produto.php"); ?>
+        <?php $produtos = $produtoObj->selecionar(); ?>
 
         <?php if (count($produtos) > 0) : ?>
         <h4>Produtos Cadastrados</h4>
@@ -78,7 +81,7 @@
                     <a class="btn btn-sm btn-outline-warning"
                         href="./produto_form_alterar.php?cod_prod=<?= $p['codigo']  ?>">Alterar</a>
                     <a class="btn btn-sm btn-outline-danger" onclick="return confirm('Remover <?= $p['nome'];  ?>?');"
-                        href="./remover_produto.php?cod_prod=<?= $p['codigo']  ?>">Remover</a>
+                        href="./produto_remover.php?cod_prod=<?= $p['codigo']  ?>">Remover</a>
                 </td>
             </tr>
             <?php endforeach; ?>
