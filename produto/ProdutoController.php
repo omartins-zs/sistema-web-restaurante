@@ -8,4 +8,10 @@ class ProdutoController
         $produto = new Produto();
         return $produto->selecionar($codigo);
     }
+
+    function cadastrar($valores)
+    {
+        $produto = new Produto();
+        $resultado = $produto->inserir($valores);
+    }
 }

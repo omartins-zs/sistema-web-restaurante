@@ -12,9 +12,8 @@ class Produto
 
     function pegar_valores_post($valores)
     {
-        session_start();
-
-        $this->codigo = $valores["cod_prod"];
+        if (!isset($_SESSION['codigo_usuario'])) session_start();
+        $this->codigo = isset($valores["cod_prod"]) ?  $valores["cod_prod"] : 0;
         $this->nome = $valores["nome_produto"];
         $this->categoria = $valores["categoria_produto"];
         $this->valor = $valores["valor_produto"];

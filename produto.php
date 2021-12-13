@@ -3,6 +3,9 @@
 <?php
     require_once('produto/ProdutoController.php.php');
     $produto_control = new ProdutoController();
+    if (count($_POST) > 0) {
+        $resultado = $produto_control->cadastrar($_POST);
+    }
     ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +23,7 @@
 
 <body>
     <div class="container">
-        <form action="produto_cadastrar.php" method="POST">
+        <form action="produto.php" method="POST">
             <h2>Produtos</h2><br>
             <div class="form-group">
                 <label for="nome_produto">Nome do produto:</label>
