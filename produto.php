@@ -1,7 +1,8 @@
 <?php session_start(); ?>
 <?php if (isset($_SESSION["nome_usuario"])) :  ?>
-<?php require_once('produto/Produto.php');
-    $produtoObj = new Produto();
+<?php
+    require_once('produto/ProdutoController.php.php');
+    $produto_control = new ProdutoController();
     ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,7 +53,7 @@
         </form>
         <br><br>
 
-        <?php $produtos = $produtoObj->selecionar(); ?>
+        <?php $produtos = $produto_control->selecionar(); ?>
 
         <?php if (count($produtos) > 0) : ?>
         <h4>Produtos Cadastrados</h4>
