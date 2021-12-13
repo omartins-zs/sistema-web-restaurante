@@ -84,7 +84,8 @@
                 <td>
                     <a class="btn btn-sm btn-outline-warning"
                         href="./produto_form_alterar.php?cod_prod=<?= $p['codigo']  ?>">Alterar</a>
-                    <a class="btn btn-sm btn-outline-danger" onclick="return confirm('Remover <?= $p['nome'];  ?>?');"
+                    <a class="btn btn-sm btn-outline-danger"
+                        onclick="removerProduto('<?= $p['nome'] ?>', <?= $p['codigo'] ?>)"
                         href="./produto_remover.php?cod_prod=<?= $p['codigo']  ?>">Remover</a>
                 </td>
             </tr>
@@ -99,6 +100,21 @@
         </script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+        </script>
+        <script>
+        function removerProduto(nomeProduto, codProduto) {
+            if (confirm('Remover' + nomeProduto + '?')) {
+                var ajax = new XMLHttpRequest();
+                ajax.responseType = 'json';
+                ajax.open("GET", "produto_remover.php?cod_prod=" + codProduto, true);
+                ajax.send();
+                ajax.addEventListener("readystatechange"),
+                    function() {
+
+                    }
+            }
+
+        }
         </script>
     </div>
 </body>

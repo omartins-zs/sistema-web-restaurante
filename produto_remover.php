@@ -4,12 +4,10 @@ if (count($_GET) > 0) {
     // 1. Pegar os valores do formulario
     $cod_prod = $_GET["cod_prod"];
 
-
-    require_once('produto/Produto.php');
+    require_once('./produto/Produto.php');
 
     $produto = new Produto();
 
     $resultado = $produto->remover($cod_prod);
 }
-header("Location: produto.php");
 include("produto.php");
