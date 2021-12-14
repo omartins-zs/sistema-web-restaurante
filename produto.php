@@ -1,7 +1,7 @@
 <?php session_start(); ?>
 <?php if (isset($_SESSION["nome_usuario"])) :  ?>
 <?php
-    require_once('produto/ProdutoController.php.php');
+    require_once('produto/ProdutoController.php');
     $produto_control = new ProdutoController();
     if (count($_POST) > 0) {
         $resultado = $produto_control->cadastrar($_POST);
@@ -61,7 +61,7 @@
         <?php if (count($produtos) > 0) : ?>
         <h4>Produtos Cadastrados</h4>
 
-        <table class="table">
+        <table id="tab-produtos" class="table">
             <tr>
                 <th>Cod.</th>
                 <th>Foto</th>
@@ -73,7 +73,7 @@
                 <th></th>
             </tr>
             <?php foreach ($produtos as $p) : ?>
-            <tr>
+            <tr id="produto<?= $p['codigo'] ?>">
                 <td><?= $p["codigo"]; ?></td>
                 <td><?= $p["foto"]; ?></td>
                 <td><?= $p["nome"]; ?></td>
@@ -103,17 +103,21 @@
         </script>
         <script>
         function removerProduto(nomeProduto, codProduto) {
-            if (confirm('Remover' + nomeProduto + '?')) {
+            if (confirm('Remover ' + nomeProduto + '?')) {
                 var ajax = new XMLHttpRequest();
                 ajax.responseType = 'json';
                 ajax.open("GET", "produto_remover.php?cod_prod=" + codProduto, true);
                 ajax.send();
-                ajax.addEventListener("readystatechange"),
+                ajax.addEventListener("readystatechange",
                     function() {
-
-                    }
+                        if (ajax.status === 200 && ajax.readyState === 4) {
+                            resposta = ajax.response.msg;
+                            alert(resposta);
+                            var linha = document.getElementById("produto" + codProduto);
+                            linha.parentNode.removeChild(linha);
+                        }
+                    });
             }
-
         }
         </script>
     </div>
