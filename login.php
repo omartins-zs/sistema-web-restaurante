@@ -11,7 +11,9 @@ if (count($_POST) > 0) {
     $password = "";
 
     try {
-        include("conexao_bd.php");
+        include("bd/BancoDados.php");
+        $bd = new BancoDados();
+        $conn = $bd->conectar();
 
         // 3. Verifica se email e senha estao no bando de dados
         $stmt = $conn->prepare("SELECT * FROM usuario WHERE situacao='Habilitado' AND email=:email AND senha=md5(:senha)");

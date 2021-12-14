@@ -29,7 +29,7 @@ class Produto
             $where_cod = " AND codigo = " . $codigo;
         }
         try {
-            include("conexao_bd.php");
+            include("bd/BancoDados.php");
 
             // 3. Faz um SELECT para pegar os produtos armazenadosno BD e traz os dados do BD
             $consulta = $conn->prepare("SELECT * FROM produto WHERE situacao = 'HABILITADO'" . $where_cod);
@@ -51,8 +51,8 @@ class Produto
         $this->pegar_valores_post($produto);
 
         try {
-            // 2. Conexao com banco de dados 
-            include("conexao_bd.php");
+
+            include("bd/BancoDados.php");
 
             $sql = "INSERT INTO produto ( nome, categoria, valor, foto,info_adicional, codigo_usuario) VALUES (?,?,?,?,?,?)";
             $stmt = $conn->prepare($sql); // STMT = Consulta
@@ -76,8 +76,8 @@ class Produto
         $this->pegar_valores_post($produto);
 
         try {
-            // 2. Conexao com banco de dados 
-            include("conexao_bd.php");
+
+            include("bd/BancoDados.php");
 
             // 3. Inseri os dados no BD
             $sql = "UPDATE produto SET nome = ?, categoria = ?, valor = ?, info_adicional = ?, data_hora = now() WHERE codigo = ?";
@@ -100,15 +100,15 @@ class Produto
     function remover($codigo)
     {
         try {
-            // 2. Conexao com banco de dados 
-            include("conexao_bd.php");
+            include("bd/BancoDados.php");
+            $bd = new BancoDados();
+            $conn = $bd->conectar();
 
             // 3. Remove os dados no BD(Coloca como "DESABILITADO")
-            $sql = "UPDATE produto SET situacao = 'Desabilitado' WHERE codigo = ?";
+            $sql = "UPDATE produto SET situacao = 'DESABILITADO' WHERE codigo = ?";
             $stmt = $conn->prepare($sql); // STMT = Consulta
             $stmt->execute([$codigo]);
 
-            // TODO substituido pelo redirecionamento
             $resultado["msg"] = "Item removido com sucesso!";
             $resultado["cod"] = 1;
             $resultado["style"] = "alert-success";
