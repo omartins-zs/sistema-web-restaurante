@@ -83,7 +83,7 @@
                 <td><?= $p["data_hora"]; ?></td>
                 <td>
                     <a class="btn btn-sm btn-outline-warning"
-                        href="./produto_form_alterar.php?cod_prod=<?= $p['codigo']  ?>">Alterar</a>
+                        href="./produto_alterar.php?cod_prod=<?= $p['codigo']  ?>">Alterar</a>
                     <a class="btn btn-sm btn-outline-danger"
                         onclick="removerProduto('<?= $p['nome'] ?>', <?= $p['codigo'] ?>)"
                         href="./produto_remover.php?cod_prod=<?= $p['codigo']  ?>">Remover</a>
