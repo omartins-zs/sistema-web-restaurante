@@ -1,0 +1,49 @@
+.form-login {
+  margin: 10px;
+  text-align: center;
+  z-index: 2;
+  position: absolute;
+  width: 80%;
+  max-width: 600px;
+  padding: 40px;
+  /* background: rgb(202, 193, 186); */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+}
+input {
+  background-color: transparent;
+  outline: none;
+  border-radius: 5px;
+}
+.video {
+  position: fixed; /* /* pode ser absolute */
+  bottom: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: 1;
+}
+h2 {
+  color: tomato;
+}
+::-webkit-input-placeholder {
+  color: white;
+  font: 12px verdana, arial, sans-serif;
+}
+
+:-moz-placeholder {
+  color: white;
+  font: 12px verdana, arial, sans-serif;
+}
+
+::-moz-placeholder {
+  color: white;
+  font: 12px verdana, arial, sans-serif;
+}
+
+:-ms-input-placeholder {
+  color: white;
+  font: 12px verdana, arial, sans-serif;
+}

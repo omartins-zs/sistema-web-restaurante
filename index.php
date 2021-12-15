@@ -13,13 +13,19 @@ session_start();
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="./css/style.css">
     <title>Registro de Pedidos 1.0</title>
 </head>
 
 <body>
+    <video autoplay muted loop class="video">
+
+        <source src="./gif/Pizza.mp4" type="video/mp4">
+        </source>
+    </video>
     <div class="container">
-        <h2>Efetue login</h2>
-        <form action="login.php" id="form_login" method="POST">
+        <form action="login.php" class="form-login" id="form_login" method="POST">
+            <h2>Faça login</h2>
             <?php if (isset($resultado) && $resultado["cod"] == 0) : ?>
             <div class="alert alert-danger">
                 <?php echo $resultado["msg"]; ?>
