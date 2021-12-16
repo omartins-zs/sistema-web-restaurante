@@ -1,5 +1,7 @@
 <?php
 
+include("bd/BancoDados.php");
+
 class Produto
 {
     private $codigo;
@@ -10,8 +12,17 @@ class Produto
     private $info;
     private $cod_usuario;
 
+    private $banco_dados;
+
+    function __construct()
+    {
+        $this->banco_dados = new BancoDados();
+    }
+
     function pegar_valores_post($valores)
     {
+        $conn = $this->banco_dados->conectar();
+
         if (!isset($_SESSION['codigo_usuario'])) session_start();
         $this->codigo = isset($valores["cod_prod"]) ?  $valores["cod_prod"] : 0;
         $this->nome = $valores["nome_produto"];
@@ -29,7 +40,7 @@ class Produto
             $where_cod = " AND codigo = " . $codigo;
         }
         try {
-            include("bd/BancoDados.php");
+            $conn = $this->banco_dados->conectar();
 
             // 3. Faz um SELECT para pegar os produtos armazenadosno BD e traz os dados do BD
             $consulta = $conn->prepare("SELECT * FROM produto WHERE situacao = 'HABILITADO'" . $where_cod);
@@ -51,8 +62,7 @@ class Produto
         $this->pegar_valores_post($produto);
 
         try {
-
-            include("bd/BancoDados.php");
+            $conn = $this->banco_dados->conectar();
 
             $sql = "INSERT INTO produto ( nome, categoria, valor, foto,info_adicional, codigo_usuario) VALUES (?,?,?,?,?,?)";
             $stmt = $conn->prepare($sql); // STMT = Consulta
@@ -67,7 +77,6 @@ class Produto
             $resultado["style"] = "alert-danger";
         }
         $conn = null;
-
         return $resultado;
     }
 
@@ -76,8 +85,7 @@ class Produto
         $this->pegar_valores_post($produto);
 
         try {
-
-            include("bd/BancoDados.php");
+            $conn = $this->banco_dados->conectar();
 
             // 3. Inseri os dados no BD
             $sql = "UPDATE produto SET nome = ?, categoria = ?, valor = ?, info_adicional = ?, data_hora = now() WHERE codigo = ?";
@@ -94,15 +102,12 @@ class Produto
             $resultado["style"] = "alert-danger";
         }
         $conn = null;
-
         return $resultado;
     }
     function remover($codigo)
     {
         try {
-            include("bd/BancoDados.php");
-            $bd = new BancoDados();
-            $conn = $bd->conectar();
+            $conn = $this->banco_dados->conectar();
 
             // 3. Remove os dados no BD(Coloca como "DESABILITADO")
             $sql = "UPDATE produto SET situacao = 'DESABILITADO' WHERE codigo = ?";
