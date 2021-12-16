@@ -1,7 +1,7 @@
 <?php session_start(); ?>
 <?php if (isset($_SESSION["nome_usuario"])) :  ?>
 <?php
-    require_once('produto/ProdutoController.php.php');
+    require_once('produto/ProdutoController.php');
     $produto_control = new ProdutoController();
     ?>
 <!DOCTYPE html>
