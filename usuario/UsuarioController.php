@@ -1,47 +1,65 @@
 <?php
 
-require_once('Usuario.php');
+require_once __DIR__ . '/Usuario.php';
+
 class UsuarioController
 {
     private $usuario;
 
-    function __construct()
+    public function __construct()
     {
         $this->usuario = new Usuario();
     }
-    function selecionar($codigo = null)
+
+    public function selecionar($codigo = null)
     {
         return $this->usuario->selecionar($codigo);
     }
 
-    function cadastrar($valores)
+    public function cadastrar($valores)
     {
-        $resultado = $this->usuario->inserir($valores);
+        return $this->usuario->inserir($valores);
     }
-    function login($valores)
+
+    public function login($valores)
     {
-        // 1. Pegar os valores do formulario
-        $filtro = array();
-        $filtro["email"] = $valores["email"];
-        $filtro["senha"] = $valores["senha"];
-        $filtro["situacao"] = "Habilitado";
+        $email = trim($valores["email"] ?? "");
+        $senha = $valores["senha"] ?? "";
 
-        $usuario = $this->usuario->selecionar($filtro);
+        if ($email === "" || $senha === "") {
+            return [
+                "msg"   => "Preencha seu e-mail e senha para entrar.",
+                "cod"   => 0,
+                "style" => "alert-danger"
+            ];
+        }
 
+        $filtro = [
+            "email"    => $email,
+            "senha"    => $senha,
+            "situacao" => "Habilitado"
+        ];
 
-        if (count($usuario) == 1) {
-            session_start();
-            $_SESSION["email_usuario"] =
-                $valores["email"];
-            $_SESSION["nome_usuario"] = $usuario[0]["nome"];
-            $_SESSION["codigo_usuario"] = $usuario[0]["codigo"];
+        $usuarios = $this->usuario->selecionar($filtro);
+
+        if (is_array($usuarios) && count($usuarios) === 1) {
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            session_regenerate_id(true);
+
+            $_SESSION["email_usuario"]  = $usuarios[0]["email"];
+            $_SESSION["nome_usuario"]   = $usuarios[0]["nome"];
+            $_SESSION["codigo_usuario"] = $usuarios[0]["codigo"];
 
             header("Location: produto.php");
-        } else if (count($usuario) == 0) {
-            $resultado["msg"] = "Email e Senha nao conferem...";
-            $resultado["cod"] = 0;
-
-            return $resultado;
+            exit;
         }
+
+        return [
+            "msg"   => "E-mail ou senha inválidos, ou usuário desabilitado.",
+            "cod"   => 0,
+            "style" => "alert-danger"
+        ];
     }
 }

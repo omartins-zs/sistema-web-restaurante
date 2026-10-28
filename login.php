@@ -1,43 +1,21 @@
 <?php
-
-if (count($_POST) > 0) {
-    // 1. Pegar os valores do formulario
-    $email = $_POST["email"];
-    $senha = $_POST["senha"];
-
-    // 2. Conexao com banco de dados 
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-
-    try {
-        include("bd/BancoDados.php");
-        $bd = new BancoDados();
-        $conn = $bd->conectar();
-
-        // 3. Verifica se email e senha estao no bando de dados
-        $stmt = $conn->prepare("SELECT * FROM usuario WHERE situacao='Habilitado' AND email=:email AND senha=md5(:senha)");
-        $stmt->bindParam(':email', $email, PDO::PARAM_STR); // STMT = Consulta
-        $stmt->bindParam(':senha', $senha, PDO::PARAM_STR);
-        $stmt->execute();
-
-        // set the resulting array to associative
-        $result = $stmt->fetchAll();
-        $qtd_usuarios = count($result);
-        if ($qtd_usuarios == 1) {
-            session_start();
-            $_SESSION["email_usuario"] = $email;
-            $_SESSION["nome_usuario"] = $result[0]["nome"];
-            $_SESSION["codigo_usuario"] = $result[0]["codigo"];
-
-            header("Location: pedido.php");
-        } else if ($qtd_usuarios == 0) {
-            $resultado["msg"] = "Email e Senha nao conferem...";
-            $resultado["cod"] = 0;
-        }
-    } catch (PDOException $e) {
-        echo "Conexão falhou: " . $e->getMessage();
-    }
-    $conn = null;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-include("index.php");
+
+require_once __DIR__ . '/usuario/UsuarioController.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && count($_POST) > 0) {
+    try {
+        $usuarioControl = new UsuarioController();
+        $resultado = $usuarioControl->login($_POST);
+    } catch (Exception $e) {
+        $resultado = [
+            "msg"   => "Erro ao conectar ao banco de dados: " . $e->getMessage(),
+            "cod"   => 0,
+            "style" => "alert-danger"
+        ];
+    }
+}
+
+include __DIR__ . '/index.php';

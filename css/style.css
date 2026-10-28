@@ -3,10 +3,12 @@
   text-align: center;
   z-index: 2;
   position: absolute;
-  width: 80%;
-  max-width: 600px;
+  width: 90%;
+  max-width: 440px;
   padding: 40px;
-  /* background: rgb(202, 193, 186); */
+  background: rgba(15, 23, 42, 0.82);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
@@ -16,34 +18,37 @@ input {
   background-color: transparent;
   outline: none;
   border-radius: 5px;
+  color: #fff;
 }
 .video {
-  position: fixed; /* /* pode ser absolute */
+  position: fixed;
   bottom: 0;
   left: 0;
   min-width: 100%;
   min-height: 100%;
+  object-fit: cover;
   z-index: 1;
 }
 h2 {
   color: tomato;
+  font-weight: 700;
 }
 ::-webkit-input-placeholder {
-  color: white;
-  font: 12px verdana, arial, sans-serif;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font: 13px verdana, arial, sans-serif;
 }
 
 :-moz-placeholder {
-  color: white;
-  font: 12px verdana, arial, sans-serif;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font: 13px verdana, arial, sans-serif;
 }
 
 ::-moz-placeholder {
-  color: white;
-  font: 12px verdana, arial, sans-serif;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font: 13px verdana, arial, sans-serif;
 }
 
 :-ms-input-placeholder {
-  color: white;
-  font: 12px verdana, arial, sans-serif;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font: 13px verdana, arial, sans-serif;
 }
