@@ -6,13 +6,23 @@ if (session_status() === PHP_SESSION_NONE) {
 <?php if (isset($_SESSION["nome_usuario"])) : ?>
 <?php
     require_once __DIR__ . '/bd/BancoDados.php';
+    require_once __DIR__ . '/produto/ProdutoController.php';
+
+    $produto_control = new ProdutoController();
+    $produtos_disponiveis = $produto_control->selecionar();
+
     $itens_pedido = [];
+    $total_geral = 0.0;
     try {
         $bd = new BancoDados();
         $conn = $bd->conectar();
         $stmt = $conn->prepare("SELECT * FROM item_pedido ORDER BY codigo DESC");
         $stmt->execute();
         $itens_pedido = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($itens_pedido as $it) {
+            $total_geral += (float) $it['preco_und'] * (int) $it['quantidade'];
+        }
     } catch (Exception $e) {
         $itens_pedido = [];
     }
@@ -34,7 +44,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="produto.php">Sistema Web Restaurante</a>
+            <a class="navbar-brand" href="produto.php">🍕 Sistema Web Restaurante</a>
             <div class="collapse navbar-collapse show">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
@@ -62,16 +72,30 @@ if (session_status() === PHP_SESSION_NONE) {
                         <?= htmlspecialchars($resultado["msg"]); ?>
                     </div>
                     <?php endif; ?>
+
+                    <?php if (!empty($produtos_disponiveis)) : ?>
+                    <div class="form-group bg-light p-3 border rounded mb-3">
+                        <label for="select_cardapio"><strong>Preencher a partir do Cardápio Cadastrado (Opcional):</strong></label>
+                        <select class="form-control" id="select_cardapio" onchange="selecionarDoCardapio(this)">
+                            <option value="">-- Selecione um produto do cardápio --</option>
+                            <?php foreach ($produtos_disponiveis as $prod) : ?>
+                            <option value="<?= htmlspecialchars($prod['nome']) ?>" data-preco="<?= htmlspecialchars($prod['valor']) ?>">
+                                <?= htmlspecialchars($prod['nome']) ?> (<?= htmlspecialchars($prod['categoria']) ?>) - R$ <?= number_format((float)$prod['valor'], 2, ',', '.') ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <?php endif; ?>
+
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="nome_produto">Nome do produto:</label>
-                            <input type="text" required class="form-control" id="nome_produto" aria-describedby="nomeHelp"
-                                name="nome_produto" placeholder="Digite o produto">
+                            <input type="text" required class="form-control" id="nome_produto"
+                                name="nome_produto" placeholder="Ex: Pizza Calabresa">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="qtd_produto">Quantidade:</label>
-                            <input type="number" required min="1" class="form-control" id="qtd_produto" name="qtd_produto"
-                                placeholder="Ex: 2">
+                            <input type="number" required min="1" value="1" class="form-control" id="qtd_produto" name="qtd_produto">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="preco_produto">Preço unitário (R$):</label>
@@ -80,16 +104,24 @@ if (session_status() === PHP_SESSION_NONE) {
                     </div>
                     <div class="form-group">
                         <label for="obs_produto">Observação:</label>
-                        <input type="text" class="form-control" name="obs_produto" id="obs_produto" placeholder="Ex: Sem cebola, borda recheada">
+                        <input type="text" class="form-control" name="obs_produto" id="obs_produto" placeholder="Ex: Sem cebola, borda recheada com catupiry">
                     </div>
-                    <button type="submit" class="btn btn-primary">Adicionar item</button>
+                    <button type="submit" class="btn btn-primary">Adicionar item ao pedido</button>
                 </form>
             </div>
         </div>
 
         <div class="card shadow-sm">
             <div class="card-body">
-                <h4 class="mb-3">Itens de Pedido Registrados</h4>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Itens de Pedido Registrados</h4>
+                    <?php if (count($itens_pedido) > 0) : ?>
+                    <span class="badge badge-success p-2" style="font-size: 1rem;">
+                        Total do Pedido: R$ <?= number_format($total_geral, 2, ',', '.'); ?>
+                    </span>
+                    <?php endif; ?>
+                </div>
+
                 <?php if (count($itens_pedido) > 0) : ?>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
@@ -102,18 +134,25 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <th>Subtotal</th>
                                 <th>Observação</th>
                                 <th>Data/Hora</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($itens_pedido as $item) : ?>
-                            <tr>
+                            <tr id="item<?= (int) ($item['codigo'] ?? 0); ?>">
                                 <td><?= (int) ($item['codigo'] ?? 0); ?></td>
-                                <td><?= htmlspecialchars($item['nome_produto']); ?></td>
+                                <td><strong><?= htmlspecialchars($item['nome_produto']); ?></strong></td>
                                 <td><?= (int) $item['quantidade']; ?></td>
                                 <td>R$ <?= number_format((float) $item['preco_und'], 2, ',', '.'); ?></td>
-                                <td>R$ <?= number_format((float) $item['preco_und'] * (int) $item['quantidade'], 2, ',', '.'); ?></td>
+                                <td class="text-success font-weight-bold">R$ <?= number_format((float) $item['preco_und'] * (int) $item['quantidade'], 2, ',', '.'); ?></td>
                                 <td><?= htmlspecialchars($item['observacao'] ?? ''); ?></td>
                                 <td><?= htmlspecialchars($item['data_hora'] ?? ''); ?></td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="removerItemPedido('<?= htmlspecialchars(addslashes($item['nome_produto'])) ?>', <?= (int) $item['codigo'] ?>)">
+                                        Excluir
+                                    </button>
+                                </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -134,6 +173,38 @@ if (session_status() === PHP_SESSION_NONE) {
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
+    <script>
+    function selecionarDoCardapio(select) {
+        var opt = select.options[select.selectedIndex];
+        if (opt.value) {
+            document.getElementById('nome_produto').value = opt.value;
+            var preco = opt.getAttribute('data-preco');
+            if (preco) {
+                document.getElementById('preco_produto').value = parseFloat(preco).toFixed(2);
+            }
+        }
+    }
+
+    function removerItemPedido(nomeItem, codItem) {
+        if (confirm('Deseja realmente remover o item "' + nomeItem + '" do pedido?')) {
+            var ajax = new XMLHttpRequest();
+            ajax.responseType = 'json';
+            ajax.open("GET", "pedido_remover.php?cod_item=" + codItem, true);
+            ajax.send();
+            ajax.addEventListener("readystatechange", function() {
+                if (ajax.readyState === 4 && ajax.status === 200) {
+                    var resposta = ajax.response ? ajax.response.msg : "Item removido!";
+                    alert(resposta);
+                    var linha = document.getElementById("item" + codItem);
+                    if (linha && linha.parentNode) {
+                        linha.parentNode.removeChild(linha);
+                    }
+                    window.location.reload();
+                }
+            });
+        }
+    }
     </script>
 </body>
 
