@@ -1,0 +1,80 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: restaurante_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/99-local.ini:ro
+      - ./docker/php/fpm-performance.conf:/usr/local/etc/php-fpm.d/zz-fpm-performance.conf:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - restaurante_network
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: restaurante_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - restaurante_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: restaurante_mysql
+    restart: unless-stopped
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-restaurante-bd}
+      MYSQL_USER: ${DB_USERNAME:-restaurante_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-restaurante_pass}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-restaurante_pass}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./bd/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - restaurante_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: restaurante_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_PASSWORD:-restaurante_pass}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - restaurante_network
+
+networks:
+  restaurante_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
