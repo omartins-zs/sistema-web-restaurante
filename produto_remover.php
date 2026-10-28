@@ -1,19 +1,27 @@
 <?php
-session_start();
-if (isset($_SESSION["codigo_usuario"])  &&  $_SESSION["codigo_usuario"] > 0) {
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-    if (count($_GET) > 0) {
-        // 1. Pegar os valores do formulario
-        $cod_prod = $_GET["cod_prod"];
+header('Content-Type: application/json; charset=utf-8');
 
-        require_once('produto/Produto.php');
+if (isset($_SESSION["codigo_usuario"]) && $_SESSION["codigo_usuario"] > 0) {
+    if (isset($_GET["cod_prod"]) && (int) $_GET["cod_prod"] > 0) {
+        $cod_prod = (int) $_GET["cod_prod"];
 
-        $produto = new Produto();
+        require_once __DIR__ . '/produto/ProdutoController.php';
 
-        $resultado = $produto->remover($cod_prod);
+        $produtoControl = new ProdutoController();
+        $resultado = $produtoControl->remover($cod_prod);
 
         echo json_encode($resultado);
+        exit;
     }
-} else {
-    echo "Operaçao nao permitida!!!!!!";
 }
+
+http_response_code(403);
+echo json_encode([
+    "msg"   => "Operação não permitida!",
+    "cod"   => 0,
+    "style" => "alert-danger"
+]);

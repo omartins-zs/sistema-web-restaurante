@@ -1,6 +1,6 @@
 <?php
 
-include("bd/BancoDados.php");
+require_once __DIR__ . '/../bd/BancoDados.php';
 
 class Produto
 {
@@ -14,113 +14,122 @@ class Produto
 
     private $banco_dados;
 
-    function __construct()
+    public function __construct()
     {
         $this->banco_dados = new BancoDados();
     }
 
-    function pegar_valores_post($valores)
+    public function pegar_valores_post($valores)
     {
-        $conn = $this->banco_dados->conectar();
-
-        if (!isset($_SESSION['codigo_usuario'])) session_start();
-        $this->codigo = isset($valores["cod_prod"]) ?  $valores["cod_prod"] : 0;
-        $this->nome = $valores["nome_produto"];
-        $this->categoria = $valores["categoria_produto"];
-        $this->valor = $valores["valor_produto"];
-        $this->foto = $valores["foto_produto"];
-        $this->info = $valores["info_produto"];
-        $this->cod_usuario = $_SESSION["codigo_usuario"];
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $this->codigo      = isset($valores["cod_prod"]) ? (int) $valores["cod_prod"] : 0;
+        $this->nome        = trim($valores["nome_produto"] ?? "");
+        $this->categoria   = trim($valores["categoria_produto"] ?? "");
+        $this->valor       = $valores["valor_produto"] ?? 0;
+        $this->foto        = $valores["foto_produto"] ?? "";
+        $this->info        = trim($valores["info_produto"] ?? "");
+        $this->cod_usuario = $_SESSION["codigo_usuario"] ?? null;
     }
 
-    function selecionar($codigo = null)
+    public function selecionar($codigo = null)
     {
-        $where_cod = "";
-        if (isset($codigo) && $codigo > 0) {
-            $where_cod = " AND codigo = " . $codigo;
-        }
         try {
             $conn = $this->banco_dados->conectar();
 
-            // 3. Faz um SELECT para pegar os produtos armazenadosno BD e traz os dados do BD
-            $consulta = $conn->prepare("SELECT * FROM produto WHERE situacao = 'HABILITADO'" . $where_cod);
-            $consulta->execute();
+            if (!empty($codigo) && (int) $codigo > 0) {
+                $consulta = $conn->prepare("SELECT * FROM produto WHERE situacao = 'HABILITADO' AND codigo = :codigo ORDER BY codigo DESC");
+                $codInt = (int) $codigo;
+                $consulta->bindParam(':codigo', $codInt, PDO::PARAM_INT);
+            } else {
+                $consulta = $conn->prepare("SELECT * FROM produto WHERE situacao = 'HABILITADO' ORDER BY codigo DESC");
+            }
 
-            $resultado = $consulta->fetchAll();
+            $consulta->execute();
+            $resultado = $consulta->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            $resultado["msg"] = "Erro ao selecionar produto no banco de dados: " . $e->getMessage();
-            $resultado["cod"] = 0;
-            $resultado["style"] = "alert-danger";
+            $resultado = [];
         }
         $conn = null;
 
         return $resultado;
     }
 
-    function inserir($produto)
+    public function inserir($produto)
     {
         $this->pegar_valores_post($produto);
 
         try {
             $conn = $this->banco_dados->conectar();
 
-            $sql = "INSERT INTO produto ( nome, categoria, valor, foto,info_adicional, codigo_usuario) VALUES (?,?,?,?,?,?)";
-            $stmt = $conn->prepare($sql); // STMT = Consulta
+            $sql = "INSERT INTO produto (nome, categoria, valor, foto, info_adicional, codigo_usuario, situacao) VALUES (?, ?, ?, ?, ?, ?, 'HABILITADO')";
+            $stmt = $conn->prepare($sql);
             $stmt->execute([$this->nome, $this->categoria, $this->valor, $this->foto, $this->info, $this->cod_usuario]);
 
-            $resultado["msg"] = "Produto inserido com sucesso!";
-            $resultado["cod"] = 1;
-            $resultado["style"] = "alert-success";
+            $resultado = [
+                "msg"   => "Produto inserido com sucesso!",
+                "cod"   => 1,
+                "style" => "alert-success"
+            ];
         } catch (PDOException $e) {
-            $resultado["msg"] = "Erro ao inserir produto no banco de dados: " . $e->getMessage();
-            $resultado["cod"] = 0;
-            $resultado["style"] = "alert-danger";
+            $resultado = [
+                "msg"   => "Erro ao inserir produto no banco de dados: " . $e->getMessage(),
+                "cod"   => 0,
+                "style" => "alert-danger"
+            ];
         }
         $conn = null;
         return $resultado;
     }
 
-    function atualizar($produto)
+    public function atualizar($produto)
     {
         $this->pegar_valores_post($produto);
 
         try {
             $conn = $this->banco_dados->conectar();
 
-            // 3. Inseri os dados no BD
             $sql = "UPDATE produto SET nome = ?, categoria = ?, valor = ?, info_adicional = ?, data_hora = now() WHERE codigo = ?";
-            $stmt = $conn->prepare($sql); // STMT = Consulta
+            $stmt = $conn->prepare($sql);
             $stmt->execute([$this->nome, $this->categoria, $this->valor, $this->info, $this->codigo]);
 
-            // TODO substituido pelo redirecionamento
-            $resultado["msg"] = "Item alterado com sucesso!";
-            $resultado["cod"] = 1;
-            $resultado["style"] = "alert-success";
+            $resultado = [
+                "msg"   => "Item alterado com sucesso!",
+                "cod"   => 1,
+                "style" => "alert-success"
+            ];
         } catch (PDOException $e) {
-            $resultado["msg"] = "Erro ao inserir produto no banco de dados: " . $e->getMessage();
-            $resultado["cod"] = 0;
-            $resultado["style"] = "alert-danger";
+            $resultado = [
+                "msg"   => "Erro ao alterar produto no banco de dados: " . $e->getMessage(),
+                "cod"   => 0,
+                "style" => "alert-danger"
+            ];
         }
         $conn = null;
         return $resultado;
     }
-    function remover($codigo)
+
+    public function remover($codigo)
     {
         try {
             $conn = $this->banco_dados->conectar();
 
-            // 3. Remove os dados no BD(Coloca como "DESABILITADO")
             $sql = "UPDATE produto SET situacao = 'DESABILITADO' WHERE codigo = ?";
-            $stmt = $conn->prepare($sql); // STMT = Consulta
-            $stmt->execute([$codigo]);
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([(int) $codigo]);
 
-            $resultado["msg"] = "Item removido com sucesso!";
-            $resultado["cod"] = 1;
-            $resultado["style"] = "alert-success";
+            $resultado = [
+                "msg"   => "Item removido com sucesso!",
+                "cod"   => 1,
+                "style" => "alert-success"
+            ];
         } catch (PDOException $e) {
-            $resultado["msg"] = "Erro ao remover produto no banco de dados: " . $e->getMessage();
-            $resultado["cod"] = 0;
-            $resultado["style"] = "alert-danger";
+            $resultado = [
+                "msg"   => "Erro ao remover produto no banco de dados: " . $e->getMessage(),
+                "cod"   => 0,
+                "style" => "alert-danger"
+            ];
         }
         $conn = null;
         return $resultado;

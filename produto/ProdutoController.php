@@ -1,21 +1,33 @@
 <?php
 
-require_once('Produto.php');
+require_once __DIR__ . '/Produto.php';
+
 class ProdutoController
 {
     private $produto;
 
-    function __construct()
+    public function __construct()
     {
         $this->produto = new Produto();
     }
-    function selecionar($codigo = null)
+
+    public function selecionar($codigo = null)
     {
         return $this->produto->selecionar($codigo);
     }
 
-    function cadastrar($valores)
+    public function cadastrar($valores)
     {
-        $resultado = $this->produto->inserir($valores);
+        return $this->produto->inserir($valores);
+    }
+
+    public function atualizar($valores)
+    {
+        return $this->produto->atualizar($valores);
+    }
+
+    public function remover($codigo)
+    {
+        return $this->produto->remover($codigo);
     }
 }

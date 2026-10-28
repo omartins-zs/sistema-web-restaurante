@@ -1,12 +1,17 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-if (count($_POST) > 0) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && count($_POST) > 0) {
+    require_once __DIR__ . '/produto/ProdutoController.php';
 
-    require_once('produto/Produto.php');
-
-    $produto = new Produto();
-
-    $resultado = $produto->atualizar($_POST);
+    $produtoControl = new ProdutoController();
+    $_SESSION["flash_resultado"] = $produtoControl->atualizar($_POST);
 
     header("Location: produto.php");
+    exit;
 }
+
+header("Location: produto.php");
+exit;
